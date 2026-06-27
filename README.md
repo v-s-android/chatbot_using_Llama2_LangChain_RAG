@@ -21,5 +21,19 @@ Steps:
 - Implement PDF upload functionality to allow the assistant to comprehend file input from users
 - Integrate the assistant with open source models to give it a high level of intelligence and the ability to understand and respond to user requests
 - Deploy the PDF assistant to a web server for use by a wider audience
+For reference, take a look at : https://github.com/ibm-developer-skills-network/wbphl-build_own_chatbot_without_open_ai
 
-
+set up the environment by executing the following code
+```
+pip3 install virtualenv 
+virtualenv my_env # create a virtual environment my_env
+source my_env/bin/activate # activate my_env
+```
+and then:
+```
+pip install -r requirements.txt
+```
+install:
+```
+pip install "langchain==0.3.27" "langchain-core==0.3.80" "langchain-community==0.3.31" "langchain-huggingface==0.3.1" "langchain-text-splitters==0.3.11" "huggingface-hub==0.36.0" "tokenizers==0.19.1" "transformers==4.43.3" "sentence-transformers==2.7.0" "requests==2.32.5"
+```
