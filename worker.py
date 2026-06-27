@@ -23,6 +23,10 @@ chat_history = []
 llm_hub = None
 embeddings = None
 
+# placeholder for Watsonx_API and Project_id incase you need to use the code locally
+# Watsonx_API = "Your WatsonX API"
+# Project_id= "Your Project ID"
+
 # Function to initialize the language model and its embeddings
 def init_llm():
     global llm_hub, embeddings
@@ -30,12 +34,11 @@ def init_llm():
     logger.info("Initializing WatsonxLLM and embeddings...")
 
     # Llama Model Configuration
-    MODEL_ID = "meta-llama/llama-3-3-70b-instruct"
-    WATSONX_URL = "https://us-south.ml.cloud.ibm.com"
-    PROJECT_ID = "skills-network"
+    #MODEL_ID = "meta-llama/llama-3-3-70b-instruct"
+    MODEL_ID = "meta-llama/llama-4-maverick-17b-128e-instruct-fp8"
+    WATSONX_URL = "https://us-south.ml.cloud.ibm.com" # service URL
+    PROJECT_ID = "skills-network" # an authentication token
 
-    # Use the same parameters as before:
-    #   MAX_NEW_TOKENS: 256, TEMPERATURE: 0.1
     model_parameters = {
         # "decoding_method": "greedy",
         "max_new_tokens": 256,
@@ -52,7 +55,11 @@ def init_llm():
     logger.debug("WatsonxLLM initialized: %s", llm_hub)
 
     #Initialize embeddings using a pre-trained model to represent the text data.
-    embeddings =  # create object of Hugging Face Instruct Embeddings with (model_name,  model_kwargs={"device": DEVICE} )
+    # create object of Hugging Face Instruct Embeddings with (model_name,  model_kwargs={"device": DEVICE} )
+    embeddings =  HuggingFaceEmbeddings(
+        model_name = "sentence-transformers/all-MiniLM-L6-v2",
+        model_kwargs={"device": DEVICE}
+    )
     
     logger.debug("Embeddings initialized with model device: %s", DEVICE)
 

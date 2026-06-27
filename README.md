@@ -20,7 +20,8 @@ Steps:
 - Set up a development environment for building an assistant using Python Flask
 - Implement PDF upload functionality to allow the assistant to comprehend file input from users
 - Integrate the assistant with open source models to give it a high level of intelligence and the ability to understand and respond to user requests
-- Deploy the PDF assistant to a web server for use by a wider audience
+- Deploy the PDF assistant to a web server for use by a wider audience.
+
 For reference, take a look at : https://github.com/ibm-developer-skills-network/wbphl-build_own_chatbot_without_open_ai
 
 set up the environment by executing the following code
