@@ -68,19 +68,31 @@ def process_document(document_path):
     global conversation_retrieval_chain
 
     logger.info("Loading document from path: %s", document_path)
+    '''
+    Document loading: The PDF document is loaded using the PyPDFLoader class, which takes the path of the document as an argument.
+    '''
     # Load the document
-    loader =  # ---> use PyPDFLoader and document_path from the function input parameter <---
+    loader =  PyPDFLoader(document_path)
     documents = loader.load()
     logger.debug("Loaded %d document(s)", len(documents))
 
+    '''
+    Document splitting: The loaded document is split into chunks using the RecursiveCharacterTextSplitter class. 
+    The `chunk_size` and `overlap` can be specified. 
+    '''
+
     # Split the document into chunks, set chunk_size=1024, and chunk_overlap=64. assign it to variable text_splitter
-    text_splitter = # ---> use Recursive Character TextSplitter and specify the input parameters <---
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size = 1024, chunk_overlap = 64)
     texts = text_splitter.split_documents(documents)
     logger.debug("Document split into %d text chunks", len(texts))
 
+    '''
+    Vector store creation: A vector store, which is a kind of index, is created from the document chunks using the language model embeddings.
+    This is done using the Chroma class.
+    '''
     # Create an embeddings database using Chroma from the split text chunks.
     logger.info("Initializing Chroma vector store from documents...")
-    db = Chroma.from_documents(texts, embedding=embeddings)
+    db = Chroma.from_documents(texts, embedding = embeddings)
     logger.debug("Chroma vector store initialized.")
 
     # Optional: Log available collections if accessible (this may be internal API)
@@ -89,15 +101,20 @@ def process_document(document_path):
         logger.debug("Available collections in Chroma: %s", collections)
     except Exception as e:
         logger.warning("Could not retrieve collections from Chroma: %s", e)
+    
+    '''
+    Retrieval system setup: A retrieval system is set up using the vector store.
+    This system, calls a ConversationalRetrievalChain, used to answer questions based on the document content.
+    '''
 
     # Build the QA chain, which utilizes the LLM and retriever for answering questions. 
     conversation_retrieval_chain = RetrievalQA.from_chain_type(
-        llm=llm_hub,
-        chain_type="stuff",
-        retriever=db.as_retriever(search_type="mmr", search_kwargs={'k': 6, 'lambda_mult': 0.25}),
-        return_source_documents=False,
-        input_key="question"
-        # chain_type_kwargs={"prompt": prompt}  # if you are using a prompt template, uncomment this part
+        llm = llm_hub,
+        chain_type = "stuff",
+        retriever = db.as_retriever(search_type="mmr", search_kwargs={'k': 6, 'lambda_mult': 0.25}),
+        return_source_documents = False,
+        input_key = "question"
+        # chain_type_kwargs = {"prompt": prompt}  # if you are using a prompt template, uncomment this part
     )
     logger.info("RetrievalQA chain created successfully.")
     
@@ -107,15 +124,17 @@ def process_prompt(prompt):
     global chat_history
 
     logger.info("Processing prompt: %s", prompt)
+
     # Query the model using the new .invoke() method
-    output = conversation_retrieval_chain.invoke({"question": prompt, "chat_history": chat_history})
+    output = conversation_retrieval_chain.invoke({"question": prompt,"chat_history": chat_history})
+
     answer = output["result"]
     logger.debug("Model response: %s", answer)
 
     # Update the chat history
-    # TODO: Append the prompt and the bot's response to the chat history using chat_history.append and pass `prompt` `answer` as arguments
-    # --> write your code here <--	
-    
+    # Append the prompt and the bot's response to the chat history using chat_history.append and pass `prompt` `answer` as arguments
+    chat_history.append((prompt, answer))
+
     logger.debug("Chat history updated. Total exchanges: %d", len(chat_history))
 
     # Return the model's response
